@@ -21,6 +21,7 @@ class Name(Field):
 class Phone(Field):
 
     def __init__(self, value):
+        
         if not isinstance(value, str):
             raise ValueError("Телефонний номер повинен бути рядком")
         if not re.match(r"^\d{10}$", value):
@@ -43,8 +44,13 @@ class Record:
     def edit_phone(self, old_phone_number: str, new_phone_number: str):
         for phone in self.phones:
             if phone.value == old_phone_number:
-                phone.value = Phone(new_phone_number).value
-                break
+                try:
+                    phone.value = Phone(new_phone_number).value
+                except FormatPhoneNumberException:
+                    raise
+                return
+        raise ValueError(f"Номер телефону не знайдено.")
+
     
     def find_phone(self, phone_number: str):
         for phone in self.phones:
